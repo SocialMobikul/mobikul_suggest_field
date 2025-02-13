@@ -1,7 +1,9 @@
 name: mobikul_suggest_field
 description: "Advanced and customizable suggestion field for Flutter."
 version: 0.0.1
-homepage:
+homepage: https://github.com/SocialMobikul/mobikul_suggest_field
+
+repository: https://github.com/SocialMobikul/mobikul_suggest_field
 
 environment:
   sdk: ^3.6.0
