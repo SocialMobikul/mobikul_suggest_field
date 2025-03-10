@@ -7,6 +7,7 @@ import 'dart:async';
 /// Defines the display style for suggestions.
 ///
 /// Provides different ways to present suggestions to the user.
+
 enum SuggestionDisplayStyle {
   /// Displays suggestions in a vertical list.
   list,
@@ -18,9 +19,6 @@ enum SuggestionDisplayStyle {
   chips,
 }
 
-/// Defines the visual theme for the suggestion field.
-///
-/// Allows customization of colors, text styles, and other visual properties.
 class SuggestionTheme {
   /// The background color of the suggestion field.
   final Color backgroundColor;
@@ -61,19 +59,12 @@ class SuggestionTheme {
   });
 }
 
-/// A highly customizable suggestion field widget.
-///
-/// Provides features like:
-/// - Dynamic suggestion filtering
-/// - Multiple display styles
-/// - Search history
-/// - Voice and emoji input support
 class MobikulSuggestField extends StatefulWidget {
-  /// List of suggestions to be displayed.
-  final List<String> suggestions;
+  /// List of suggestions (of type Suggestion) to be displayed.
+  final List<Suggestion> suggestions;
 
   /// Callback triggered when a suggestion is selected.
-  final Function(String) onSelected;
+  final Function(Suggestion) onSelected;
 
   /// Optional callback when input is submitted.
   final Function(String)? onSubmitted;
@@ -171,76 +162,69 @@ class MobikulSuggestField extends StatefulWidget {
 }
 
 class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
-  final TextEditingController _controller =
-      TextEditingController(); // Controller to manage text input
-  final FocusNode _focusNode =
-      FocusNode(); // Focus node to track text field focus
-  List<String> _filteredSuggestions =
-      []; // Filtered suggestions list based on user input
-  List<String> _recentSearches = []; // Recent searches list
-  Timer? _debounceTimer; // Timer to delay suggestion filtering
-  bool _isLoading = false; // Flag to show loading state for suggestions
-  bool _showEmoji = false; // Flag to show emoji keyboard (if enabled)
+  final TextEditingController _controller = TextEditingController();
+  List<Suggestion> _filteredSuggestions = [];
+  final FocusNode _focusNode = FocusNode();
+
+  Timer? _debounceTimer;
+  final bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _recentSearches = widget.recentSearches ?? [];
-    _controller.addListener(_onTextChanged); // Add listener for text changes
-    _focusNode.addListener(_onFocusChanged); // Add listener for focus changes
+    _filteredSuggestions = widget.suggestions;
+    _controller.addListener(_onTextChanged);
   }
 
-  // Triggered when the focus changes (text field gains or loses focus)
-  void _onFocusChanged() {
-    if (_focusNode.hasFocus && _controller.text.isEmpty) {
-      setState(() {
-        _filteredSuggestions =
-            _recentSearches.take(widget.maxSuggestions).toList();
-      });
-    }
-  }
-
-  // Triggered when the text input changes
   void _onTextChanged() {
-    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    _debounceTimer = Timer(widget.debounceTime, () {
-      _filterSuggestions(_controller.text);
+    setState(() {
+      _filteredSuggestions = widget.suggestions
+          .where((suggestion) => suggestion.name
+              .toLowerCase()
+              .contains(_controller.text.toLowerCase()))
+          .toList();
     });
-
-    if (widget.onChanged != null) {
-      widget.onChanged!(_controller.text);
-    }
   }
 
-  // Filter suggestions based on user input
-  void _filterSuggestions(String input) {
-    setState(() {
-      _isLoading = true;
-    });
+  Widget _buildHighlightedText(Suggestion suggestion) {
+    String input = _controller.text;
+    if (input.isEmpty)
+      return Text(suggestion.name, style: widget.suggestionStyle);
 
-    if (input.isEmpty) {
-      _filteredSuggestions =
-          _recentSearches.take(widget.maxSuggestions).toList();
-    } else {
-      _filteredSuggestions = widget.suggestions
-          .where((suggestion) => widget.caseSensitive
-              ? suggestion.contains(input)
-              : suggestion.toLowerCase().contains(input.toLowerCase()))
-          .take(widget.maxSuggestions)
-          .toList();
-    }
+    int startIndex = suggestion.name.toLowerCase().indexOf(input.toLowerCase());
+    if (startIndex == -1)
+      return Text(suggestion.name, style: widget.suggestionStyle);
 
-    setState(() {
-      _isLoading = false;
-    });
+    int endIndex = startIndex + input.length;
+
+    return ListTile(
+      leading: Icon(suggestion.icon),
+      title: RichText(
+        text: TextSpan(
+          style: widget.suggestionStyle ?? const TextStyle(color: Colors.black),
+          children: [
+            TextSpan(text: suggestion.name.substring(0, startIndex)),
+            TextSpan(
+              text: suggestion.name.substring(startIndex, endIndex),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.blue),
+            ),
+            TextSpan(text: suggestion.name.substring(endIndex)),
+          ],
+        ),
+      ),
+      onTap: () => _onSuggestionSelected(suggestion),
+    );
   }
 
   // Build individual suggestion item
-  Widget _buildSuggestionItem(String suggestion) {
-    final bool isSelected = _controller.text == suggestion;
+  Widget _buildSuggestionItem(Suggestion suggestion) {
+    final bool isSelected = _controller.text == suggestion.name;
     return ListTile(
+      leading: Icon(suggestion.icon), // Wrap IconData inside Icon
+
       title: Text(
-        suggestion,
+        suggestion.name,
         style: widget.suggestionStyle?.copyWith(
           color: isSelected ? widget.highlightColor : null,
         ),
@@ -265,47 +249,39 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
           },
         );
       case SuggestionDisplayStyle.chips:
-        return Wrap(
-          spacing: 8.0,
-          children: _filteredSuggestions
-              .map((suggestion) => ActionChip(
-                    label: Text(suggestion),
-                    onPressed: () => _onSuggestionSelected(suggestion),
-                  ))
-              .toList(),
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical, // Allows vertical scrolling if needed
+          child: Wrap(
+            spacing: 8.0,
+            runSpacing: 4.0, // Adds spacing between rows
+            children: _filteredSuggestions
+                .map((suggestion) => ActionChip(
+                      avatar: Icon(suggestion.icon),
+                      label: Text(suggestion.name),
+                      onPressed: () => _onSuggestionSelected(suggestion),
+                    ))
+                .toList(),
+          ),
         );
       default:
         return ListView.builder(
           shrinkWrap: true,
           itemCount: _filteredSuggestions.length,
           itemBuilder: (context, index) {
-            return _buildSuggestionItem(_filteredSuggestions[index]);
+            return _buildHighlightedText(_filteredSuggestions[index]);
           },
         );
     }
   }
 
   // Triggered when a suggestion is selected
-  void _onSuggestionSelected(String suggestion) {
-    _controller.text =
-        suggestion; // Update text field with the selected suggestion
+  void _onSuggestionSelected(Suggestion suggestion) {
+    _controller.text = suggestion.name;
     _controller.selection = TextSelection.fromPosition(
-      TextPosition(offset: suggestion.length),
-    );
+        TextPosition(offset: suggestion.name.length));
 
-    if (widget.enableHistory && !_recentSearches.contains(suggestion)) {
-      setState(() {
-        _recentSearches.insert(0, suggestion);
-        if (_recentSearches.length > widget.maxSuggestions) {
-          _recentSearches.removeLast();
-        }
-      });
-    }
-
-    widget.onSelected(
-        suggestion); // Call the callback when a suggestion is selected
-    _filteredSuggestions.clear(); // Clear suggestions after selection
-    _focusNode.unfocus(); // Remove focus from the text field
+    widget.onSelected(suggestion);
+    _filteredSuggestions.clear();
   }
 
   @override
@@ -333,25 +309,9 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
                   IconButton(
                     icon: const Icon(Icons.clear),
                     onPressed: () {
-                      _controller.clear(); // Clear the text field
+                      _controller.clear();
                       setState(() {
-                        _filteredSuggestions.clear(); // Clear suggestions
-                      });
-                    },
-                  ),
-                if (widget.enableVoiceInput)
-                  IconButton(
-                    icon: const Icon(Icons.mic),
-                    onPressed: () {
-                      // Implement voice input functionality here
-                    },
-                  ),
-                if (widget.enableEmoji)
-                  IconButton(
-                    icon: const Icon(Icons.emoji_emotions),
-                    onPressed: () {
-                      setState(() {
-                        _showEmoji = !_showEmoji; // Toggle emoji keyboard
+                        _filteredSuggestions.clear();
                       });
                     },
                   ),
@@ -362,7 +322,7 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
           ),
           style: widget.textStyle,
           autocorrect: widget.autoCorrect,
-          onSubmitted: widget.onSubmitted, // Handle text field submission
+          onSubmitted: widget.onSubmitted,
         ),
         if (_filteredSuggestions.isNotEmpty)
           Container(
@@ -382,9 +342,21 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
 
   @override
   void dispose() {
-    _controller.dispose(); // Dispose the text controller
-    _focusNode.dispose(); // Dispose the focus node
-    _debounceTimer?.cancel(); // Cancel the debounce timer
+    _controller.dispose();
+    _focusNode.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
+}
+
+// Suggestion  model
+
+class Suggestion {
+  final String name;
+  final IconData? icon; // Optional icon field
+
+  Suggestion({
+    required this.name,
+    this.icon,
+  });
 }

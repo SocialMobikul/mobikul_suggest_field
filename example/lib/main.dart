@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mobikul_suggest_field/mobikul_suggest_field.dart';
 
@@ -31,24 +30,41 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Example data
-  final List<String> _countries = [
-    'United States',
-    'United Kingdom',
-    'Canada',
-    'Australia',
-    'Germany',
-    'France',
-    'Italy',
-    'Spain',
-    'Japan',
-    'China',
-    'India',
-    'Brazil',
-    'Mexico',
-    'Russia',
-    'South Korea',
+  List<Suggestion> suggestions = [
+    Suggestion(name: 'Canada', icon: Icons.flag),
+    Suggestion(name: 'Australia', icon: Icons.public),
+    Suggestion(name: 'Germany', icon: Icons.language),
+    Suggestion(name: 'France', icon: Icons.map),
+    Suggestion(name: 'Italy', icon: Icons.travel_explore),
+    Suggestion(name: 'Spain', icon: Icons.flight),
+    Suggestion(name: 'Japan', icon: Icons.location_on),
+    Suggestion(name: 'China', icon: Icons.apartment),
+    Suggestion(name: 'India', icon: Icons.place),
+    Suggestion(name: 'Brazil', icon: Icons.explore),
+    Suggestion(name: 'Mexico', icon: Icons.terrain),
+    Suggestion(name: 'Russia', icon: Icons.landscape),
+    Suggestion(name: 'South Korea', icon: Icons.route),
+    Suggestion(name: 'Argentina', icon: Icons.airplanemode_active),
+    Suggestion(name: 'Belgium', icon: Icons.business),
+    Suggestion(name: 'South Africa', icon: Icons.nature),
+    Suggestion(name: 'Switzerland', icon: Icons.star),
+    Suggestion(name: 'Sweden', icon: Icons.home),
+    Suggestion(name: 'Netherlands', icon: Icons.account_balance),
+    Suggestion(name: 'Norway', icon: Icons.museum),
+    Suggestion(name: 'Greece', icon: Icons.beach_access),
+    Suggestion(name: 'Egypt', icon: Icons.directions_boat),
+    Suggestion(name: 'Thailand', icon: Icons.wb_sunny),
+    Suggestion(name: 'Singapore', icon: Icons.eco),
+    Suggestion(name: 'Turkey', icon: Icons.forest),
+    Suggestion(name: 'Poland', icon: Icons.military_tech),
+    Suggestion(name: 'Israel', icon: Icons.sports_soccer),
+    Suggestion(name: 'Denmark', icon: Icons.sports_basketball),
+    Suggestion(name: 'Finland', icon: Icons.sports_cricket),
+    Suggestion(name: 'Indonesia', icon: Icons.monetization_on),
+    Suggestion(name: 'Malaysia', icon: Icons.flag), // Icons repeat from start
+    Suggestion(name: 'Vietnam', icon: Icons.public),
+    Suggestion(name: 'Saudi Arabia', icon: Icons.language),
   ];
-
 
   String _selectedCountry = '';
 
@@ -78,26 +94,26 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 16),
                     MobikulSuggestField(
-                      decoration: const InputDecoration(
+                      displayStyle: SuggestionDisplayStyle.grid,
+                      suggestions: suggestions,
+                      decoration: InputDecoration(
+                        labelText: 'Search Countries',
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10))
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        filled: true,
+                        fillColor: Colors.grey[100],
                       ),
-                      suggestions: _countries,
                       onSelected: (value) {
                         setState(() {
-                          _selectedCountry = value;
+                          _selectedCountry = value.name;
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Selected: $value')),
-                        );
                       },
-                      hintText: 'Search Country',
+                      hintText: 'Search Countries',
                     ),
                   ],
                 ),
               ),
-
 
               if (_selectedCountry.isNotEmpty)
                 Card(

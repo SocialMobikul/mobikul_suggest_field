@@ -1,3 +1,9 @@
+## [0.0.4]
+
+### Added
+- Show icon with suggestions.
+- Highlight the matching text in suggestions.
+
 ## [0.0.3]
 
 ### Added

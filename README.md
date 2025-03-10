@@ -48,45 +48,45 @@ hintText: 'Search for a country...',
 )
 
 ```
- 
+
 ### Customize Suggest Field Example
 ```dart
 
 MobikulSuggestField(
-  suggestions: _countries,
-  recentSearches: _recentSearches,
-  onSelected: (value) {
-    setState(() {
-      _selectedCountry = value;
-    });
-  },
-  onSubmitted: (value) {
-    print('Submitted: $value');
-  },
-  onChanged: (value) {
-    print('Changed: $value');
-  },
-  decoration: InputDecoration(
-    labelText: 'Search Countries',
-    border: OutlineInputBorder(),
-    filled: true,
-    fillColor: Colors.grey[100],
-  ),
-  maxSuggestions: 5,
-  backgroundColor: Theme.of(context).cardColor,
-  highlightColor: Theme.of(context).primaryColor,
-  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-  suggestionStyle: TextStyle(fontSize: 14, color: Colors.grey[800]),
-  enableHistory: true,
-  displayStyle: SuggestionDisplayStyle.list,
-  showClearButton: true,
-  autoCorrect: false,
-  debounceTime: Duration(milliseconds: 300),
-  suggestionItemHeight: 50.0,
-  prefixIcon: Icon(Icons.search),
-  enableVoiceInput: true,
-  enableEmoji: true,
-  caseSensitive: false,
+suggestions: _countries,
+recentSearches: _recentSearches,
+onSelected: (value) {
+setState(() {
+_selectedCountry = value;
+});
+},
+onSubmitted: (value) {
+print('Submitted: $value');
+},
+onChanged: (value) {
+print('Changed: $value');
+},
+decoration: InputDecoration(
+labelText: 'Search Countries',
+border: OutlineInputBorder(),
+filled: true,
+fillColor: Colors.grey[100],
+),
+maxSuggestions: 5,
+backgroundColor: Theme.of(context).cardColor,
+highlightColor: Theme.of(context).primaryColor,
+textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+suggestionStyle: TextStyle(fontSize: 14, color: Colors.grey[800]),
+enableHistory: true,
+displayStyle: SuggestionDisplayStyle.list,
+showClearButton: true,
+autoCorrect: false,
+debounceTime: Duration(milliseconds: 300),
+suggestionItemHeight: 50.0,
+prefixIcon: Icon(Icons.search),
+enableVoiceInput: true,
+enableEmoji: true,
+caseSensitive: false,
 )
 
 ```
@@ -124,10 +124,10 @@ Here’s an example of the `MobikulSuggestField` in action:
 ## Customize MobikulSuggestField
 ![Advance MobikulSuggestField](https://raw.githubusercontent.com/SocialMobikul/mobikul_suggest_field/main/mobikul_suggest_field_customize_example.gif)
 
-## MobikulSuggestField with Grid 
+## MobikulSuggestField with Grid
 ![MobikulSuggestField with Grid](https://raw.githubusercontent.com/SocialMobikul/mobikul_suggest_field/main/mobikul_suggest_field_grid_example.gif)
 
-
-
+## MobikulSuggestField with Chip
+![MobikulSuggestField with Chip](https://git.webkul.com/priyankagupta.mk322/mobikul_suggest_field/-/blob/main/mobikul_suggest_feild_chip_example.gif)
 
 Start building amazing SuggestField today with the `MobikulSuggestField` package! 🚀
