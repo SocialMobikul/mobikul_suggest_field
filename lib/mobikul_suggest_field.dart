@@ -188,12 +188,14 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
 
   Widget _buildHighlightedText(Suggestion suggestion) {
     String input = _controller.text;
-    if (input.isEmpty)
+    if (input.isEmpty) {
       return Text(suggestion.name, style: widget.suggestionStyle);
+    }
 
     int startIndex = suggestion.name.toLowerCase().indexOf(input.toLowerCase());
-    if (startIndex == -1)
+    if (startIndex == -1) {
       return Text(suggestion.name, style: widget.suggestionStyle);
+    }
 
     int endIndex = startIndex + input.length;
 

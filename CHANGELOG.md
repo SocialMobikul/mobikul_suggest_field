@@ -1,3 +1,8 @@
+## [0.0.5]
+
+### Added
+- Added example code to demonstrate package usage.
+
 ## [0.0.4]
 
 ### Added
