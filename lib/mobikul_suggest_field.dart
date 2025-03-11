@@ -4,6 +4,8 @@ library mobikul_suggest_field;
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'mobikul_suggest_helper.dart';
+
 /// Defines the display style for suggestions.
 ///
 /// Provides different ways to present suggestions to the user.
@@ -186,96 +188,6 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
     });
   }
 
-  Widget _buildHighlightedText(Suggestion suggestion) {
-    String input = _controller.text;
-    if (input.isEmpty) {
-      return Text(suggestion.name, style: widget.suggestionStyle);
-    }
-
-    int startIndex = suggestion.name.toLowerCase().indexOf(input.toLowerCase());
-    if (startIndex == -1) {
-      return Text(suggestion.name, style: widget.suggestionStyle);
-    }
-
-    int endIndex = startIndex + input.length;
-
-    return ListTile(
-      leading: Icon(suggestion.icon),
-      title: RichText(
-        text: TextSpan(
-          style: widget.suggestionStyle ?? const TextStyle(color: Colors.black),
-          children: [
-            TextSpan(text: suggestion.name.substring(0, startIndex)),
-            TextSpan(
-              text: suggestion.name.substring(startIndex, endIndex),
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.blue),
-            ),
-            TextSpan(text: suggestion.name.substring(endIndex)),
-          ],
-        ),
-      ),
-      onTap: () => _onSuggestionSelected(suggestion),
-    );
-  }
-
-  // Build individual suggestion item
-  Widget _buildSuggestionItem(Suggestion suggestion) {
-    final bool isSelected = _controller.text == suggestion.name;
-    return ListTile(
-      leading: Icon(suggestion.icon), // Wrap IconData inside Icon
-
-      title: Text(
-        suggestion.name,
-        style: widget.suggestionStyle?.copyWith(
-          color: isSelected ? widget.highlightColor : null,
-        ),
-      ),
-      onTap: () => _onSuggestionSelected(suggestion),
-    );
-  }
-
-  // Build the suggestions list based on display style
-  Widget _buildSuggestionsList() {
-    switch (widget.displayStyle) {
-      case SuggestionDisplayStyle.grid:
-        return GridView.builder(
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 3,
-          ),
-          itemCount: _filteredSuggestions.length,
-          itemBuilder: (context, index) {
-            return _buildSuggestionItem(_filteredSuggestions[index]);
-          },
-        );
-      case SuggestionDisplayStyle.chips:
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical, // Allows vertical scrolling if needed
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 4.0, // Adds spacing between rows
-            children: _filteredSuggestions
-                .map((suggestion) => ActionChip(
-                      avatar: Icon(suggestion.icon),
-                      label: Text(suggestion.name),
-                      onPressed: () => _onSuggestionSelected(suggestion),
-                    ))
-                .toList(),
-          ),
-        );
-      default:
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: _filteredSuggestions.length,
-          itemBuilder: (context, index) {
-            return _buildHighlightedText(_filteredSuggestions[index]);
-          },
-        );
-    }
-  }
-
   // Triggered when a suggestion is selected
   void _onSuggestionSelected(Suggestion suggestion) {
     _controller.text = suggestion.name;
@@ -336,7 +248,13 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: _buildSuggestionsList(), // Display the filtered suggestions
+            child: SuggestHelper.buildSuggestionsList(
+                _filteredSuggestions, widget.displayStyle,
+                text: _controller.text,
+                highlightColor: widget.highlightColor,
+                suggestionStyle: widget.suggestionStyle,
+                onSuggestionSelected:
+                    _onSuggestionSelected), // Display the filtered suggestions
           ),
       ],
     );
