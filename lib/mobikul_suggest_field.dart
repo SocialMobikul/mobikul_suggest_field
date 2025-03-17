@@ -182,8 +182,8 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
     setState(() {
       _filteredSuggestions = widget.suggestions
           .where((suggestion) => suggestion.name
-              .toLowerCase()
-              .contains(_controller.text.toLowerCase()))
+          .toLowerCase()
+          .contains(_controller.text.toLowerCase()))
           .toList();
     });
   }
@@ -254,7 +254,7 @@ class _MobikulSuggestFieldState extends State<MobikulSuggestField> {
                 highlightColor: widget.highlightColor,
                 suggestionStyle: widget.suggestionStyle,
                 onSuggestionSelected:
-                    _onSuggestionSelected), // Display the filtered suggestions
+                _onSuggestionSelected), // Display the filtered suggestions
           ),
       ],
     );
