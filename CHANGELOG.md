@@ -1,3 +1,10 @@
+## [0.0.6]
+
+### Added
+- Refactored code for better reusability and maintainability.
+- Improved case handling for more robust functionality.
+- Optimized the performance of key functions.
+
 ## [0.0.5]
 
 ### Added

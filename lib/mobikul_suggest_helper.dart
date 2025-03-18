@@ -7,9 +7,9 @@ class SuggestHelper {
   static Widget buildSuggestionsList(
       List<Suggestion> filteredSuggestions, SuggestionDisplayStyle displayStyle,
       {required String text,
-        TextStyle? suggestionStyle,
-        Color? highlightColor,
-        required Function(Suggestion) onSuggestionSelected}) {
+      TextStyle? suggestionStyle,
+      Color? highlightColor,
+      required Function(Suggestion) onSuggestionSelected}) {
     switch (displayStyle) {
       case SuggestionDisplayStyle.grid:
         return GridView.builder(
@@ -36,10 +36,10 @@ class SuggestHelper {
             runSpacing: 4.0, // Adds spacing between rows
             children: filteredSuggestions
                 .map((suggestion) => ActionChip(
-              avatar: Icon(suggestion.icon),
-              label: Text(suggestion.name),
-              onPressed: () => onSuggestionSelected(suggestion),
-            ))
+                      avatar: Icon(suggestion.icon),
+                      label: Text(suggestion.name),
+                      onPressed: () => onSuggestionSelected(suggestion),
+                    ))
                 .toList(),
           ),
         );
@@ -56,11 +56,11 @@ class SuggestHelper {
   }
 
   static Widget _buildHighlightedText(
-      Suggestion suggestion,
-      String text,
-      TextStyle? suggestionStyle,
-      Function(Suggestion p1) onSuggestionSelected,
-      ) {
+    Suggestion suggestion,
+    String text,
+    TextStyle? suggestionStyle,
+    Function(Suggestion p1) onSuggestionSelected,
+  ) {
     String input = text;
     if (input.isEmpty) {
       return Text(suggestion.name, style: suggestionStyle);
@@ -96,10 +96,10 @@ class SuggestHelper {
   // Build individual suggestion item
   static Widget buildSuggestionItem(
       {required Suggestion suggestion,
-        required String text,
-        TextStyle? suggestionStyle,
-        Color? highlightColor,
-        required Function(Suggestion) onSuggestionSelected}) {
+      required String text,
+      TextStyle? suggestionStyle,
+      Color? highlightColor,
+      required Function(Suggestion) onSuggestionSelected}) {
     final bool isSelected = text == suggestion.name;
     return ListTile(
       leading: Icon(suggestion.icon), // Wrap IconData inside Icon
